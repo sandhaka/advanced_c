@@ -1,6 +1,6 @@
 Advanced C Programming Notes
 ---
-> Intermediate to advanced notes for C programming
+> Intermediate to advanced notes for C programming.
 > Collected from courses and books to brush up my C know-how
 
 ### Modules and Variables
@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     // int* reg_ptr = &regVariable; // Compile-time error
 }
 ```
-#### Storage classes Overview
+#### [Storage classes](./_storage_classes/main.c) Overview
 | Storage Class | Declaration Location | Scope | Lifetime | 
 | --- | --- | --- | --- |
 | `auto` | Inside a function block | Within the function/block | Until the function block completes |
