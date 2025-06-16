@@ -13,29 +13,26 @@ int decimalToBinary(void) {
 
 int binaryToDecimal(void) {
     printf("Type a binary number:\n");
-    char binary[33];
-    int n = scanf("%32s", binary);
+    char binary[32];
+    int n = scanf("%31s", binary);
     if (n != 1) {
         printf("%s%sError reading input. Please try again.%s\n", BOLD, RED, RESET);
         return -1;
     }
     
     int i, p = 0, d = 0;
-    for (i = 0; binary[i] != '\0'; i++) {
-        if (binary[i] != '0' && binary[i] != '1') {
+    for (i = strlen(binary) - 1; i >= 0; i--,p++) {
+        if (binary[i] == '1') {            
+            d += 1 << p;
+            continue;
+        }
+        if (binary[i] != '0') {
             printf("%s%sInvalid binary number:%s%s\n", BOLD, RED, binary, RESET);
             return -1;
         }
     }
 
-    printf(BOLD GREEN "Typed: %s" RESET "\n", binary);
-
-    for (i = strlen(binary) - 1; i >= 0; i--,p++) {
-        if (binary[i] == '1')
-            d += 1 << p;
-    }
-
-    printf(BOLD GREEN "Decimal value: %d" RESET "\n", d);
+    printf(BOLD GREEN "Typed: %s Decimal: %d" RESET "\n", binary, d);
 
     return 0;
 }
