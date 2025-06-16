@@ -181,3 +181,5 @@ int main(void) {
   ```
 - All these features still rely on the developer responsability but produce effective more optimized code when used correctly!
 - Let's see a comprensive example here [📋](./_t_qualifiers/main.c)
+### Bit Manipulation
+TODO
