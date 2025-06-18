@@ -182,4 +182,4 @@ int main(void) {
 - All these features still rely on the developer responsability but produce effective more optimized code when used correctly!
 - Let's see a comprensive example here [📋](./_t_qualifiers/main.c)
 ### Bit Manipulation
-TODO
+- Bit manipulation techniques can be used to solve various conversion problems, often leading to more efficient solutions compared to traditional arithmetic methods. Classical conversion problems leveraging bit manipulation [📋](./_bit_manipulation/main.c).

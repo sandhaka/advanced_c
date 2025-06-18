@@ -6,8 +6,37 @@
 #define RED "\033[31m"
 #define RESET "\033[0m"
 
+void reverse(char ar[], int n) {
+    char temp[n];
+    for (int i = 0; i < n; i++)
+        temp[i] = ar[n - i - 1];
+    for (int i = 0; i < n; i++)
+        ar[i] = temp[i];
+}
+
 int decimalToBinary(void) {
-    printf("Type a decimal number:\n");
+    printf("Type a positive decimal number:\n");
+    int input, integer, i = 0;
+    int n = scanf("%d", &input);
+    if (n != 1 || input <= 0) {
+        printf("%s%sError reading input. Please try again.%s\n", BOLD, RED, RESET);
+        return -1;
+    }
+
+    char binary[32];
+    integer = input;
+
+    while (integer > 0)
+    {
+        binary[i++] = '0' + (integer & 1);
+        integer >>= 1;
+    }
+    binary[i] = '\0';
+    
+    reverse(binary, i);
+
+    printf(BOLD GREEN "Typed: %d Binary: %s" RESET "\n", input, binary);
+    
     return 0;
 }
 
