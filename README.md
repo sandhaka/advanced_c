@@ -182,4 +182,6 @@ int main(void) {
 - All these features still rely on the developer responsability but produce effective more optimized code when used correctly!
 - Let's see a comprensive example here [📋](./_t_qualifiers/main.c)
 ### Bit Manipulation
-- Bit manipulation techniques can be used to solve various conversion problems, often leading to more efficient solutions compared to traditional arithmetic methods. Classical conversion problems leveraging bit manipulation [📋](./_bit_manipulation/main.c).
+- Bit manipulation techniques can be used to solve various conversion problems, often leading to more efficient solutions compared to traditional arithmetic methods. Classical conversion problems leveraging bit manipulation [📋](./_common/bin_2_short.c).
+- Bit operations can be performed on any type of integer value and characters, but cannot be performed on floating-poit values.
+- Bitwise operations with a mask are usually used to store multiple information in a variable (each bit corresponds to a setting).
