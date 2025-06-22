@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     printf("w2: %d, (%s)\n", w2, w2b);
 
     r = w1 & w2;
-    printf("w1 & w2: (%d)\n", r);
+    printf("w1 & w2: %d\n", r);
     printf("%s\n", w1b);
     printf("%s\n", w2b);
     printf("---\n");
@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     printf("%s (%d)\n\n\n", res, binStrToShort(res));    
 
     r = w1 | w2;
-    printf("w1 | w2: (%d)\n", r);
+    printf("w1 | w2: %d\n", r);
     printf("%s\n", w1b);
     printf("%s\n", w2b);
     printf("---\n");
@@ -50,13 +50,21 @@ int main(int argc, char** argv) {
     printf("%s (%d)\n\n\n", res, binStrToShort(res));        
 
     r = w1 ^ w2;
-    printf("w1 ^ w2: (%d)\n", r);
+    printf("w1 ^ w2: %d\n", r);
     printf("%s\n", w1b);
     printf("%s\n", w2b);
     printf("---\n");
     res = shortToBinStr(r);
     if (res == NULL) return -1;
-    printf("%s (%d)\n\n\n", res, binStrToShort(res));        
+    printf("%s (%d)\n\n\n", res, binStrToShort(res)); 
+    
+    r = ~w1 + 1;
+    printf("~w1: %d\n", r);
+    printf("%s\n", w1b);
+    printf("---\n");
+    res = shortToBinStr(r);
+    if (res == NULL) return -1;
+    printf("%s (%d)\n\n\n", res, binStrToShort(res)); 
 
     free(w1b);
     free(w2b);
