@@ -16,12 +16,12 @@ short binStrToShort(const char binary[])
     return (short) d;
 }
 
-char* shortToBinStr(short d) {
-    char* binary = (char *) malloc(sizeof(char) * 16 + 1);
-    if (!binary) return NULL;
+int shortToBinStr(short d, char* buffer, size_t lenght) {
+    if (!buffer) return -1;
+    if (lenght != 16 + 1) return -1;
     unsigned short value = (unsigned short)d;
     for (short i = 15; i >= 0; i--)
-        binary[15 - i] = ((value >> i) & 1) ? '1' : '0';
-    binary[16] = '\0';
-    return binary;
+        buffer[15 - i] = ((value >> i) & 1) ? '1' : '0';
+    buffer[16] = '\0';
+    return 0;
 }
