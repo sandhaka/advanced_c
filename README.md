@@ -185,3 +185,6 @@ int main(void) {
 - Bit manipulation techniques can be used to solve various conversion problems, often leading to more efficient solutions compared to traditional arithmetic methods. Classical conversion problems leveraging bit manipulation [📋](./_common/bin_2_short.c).
 - Bit operations can be performed on any type of integer value and characters, but cannot be performed on floating-poit values.
 - Bitwise operations with a mask are usually used to store multiple information in a variable (each bit corresponds to a setting).
+#### Masking
+- A mask can be used to set multiple bits in a byte to either on, off or inverted from on to off using a single bitwise operator.
+- 

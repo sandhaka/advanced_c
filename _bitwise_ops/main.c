@@ -6,8 +6,8 @@
     gcc -pedantic main.c ../_common/bin_2_short.c 
  */
 
-extern int shortToBinStr(short d, char* buffer, size_t lenght);
-extern short binStrToShort(const char binary[]);
+extern int short_to_bin_str(short d, char* buffer, size_t lenght);
+extern short bin_str_to_short(const char binary[]);
 
 static void free_buffer(char** pointers, size_t count) {
     for (int i = 0; i < count; i++) {
@@ -35,13 +35,13 @@ int main(int argc, char** argv) {
         w2 = atoi(argv[2]);
     }
 
-    success = shortToBinStr(w1, w1b, buflen);
+    success = short_to_bin_str(w1, w1b, buflen);
     if (success < 0) {
         free_buffer(mem_resources, 3);
         return -1;
     }
     printf("w1: %d, (%s)\n", w1, w1b);
-    success = shortToBinStr(w2, w2b, buflen);
+    success = short_to_bin_str(w2, w2b, buflen);
     if (success < 0) {
         free_buffer(mem_resources, 3);
         return -1;
@@ -53,47 +53,47 @@ int main(int argc, char** argv) {
     printf("%s\n", w1b);
     printf("%s\n", w2b);
     printf("---\n");
-    success = shortToBinStr(r, res, buflen);
+    success = short_to_bin_str(r, res, buflen);
     if (success < 0) {
         free_buffer(mem_resources, 3);
         return -1;
     }
-    printf("%s (%d)\n\n\n", res, binStrToShort(res));    
+    printf("%s (%d)\n\n\n", res, bin_str_to_short(res));    
 
     r = w1 | w2;
     printf("w1 | w2: %d\n", r);
     printf("%s\n", w1b);
     printf("%s\n", w2b);
     printf("---\n");
-    success = shortToBinStr(r, res, buflen);
+    success = short_to_bin_str(r, res, buflen);
     if (success < 0) {
         free_buffer(mem_resources, 3);
         return -1;
     }
-    printf("%s (%d)\n\n\n", res, binStrToShort(res));        
+    printf("%s (%d)\n\n\n", res, bin_str_to_short(res));        
 
     r = w1 ^ w2;
     printf("w1 ^ w2: %d\n", r);
     printf("%s\n", w1b);
     printf("%s\n", w2b);
     printf("---\n");
-    success = shortToBinStr(r, res, buflen);
+    success = short_to_bin_str(r, res, buflen);
     if (success < 0) {
         free_buffer(mem_resources, 3);
         return -1;
     }
-    printf("%s (%d)\n\n\n", res, binStrToShort(res)); 
+    printf("%s (%d)\n\n\n", res, bin_str_to_short(res)); 
     
     r = ~w1 + 1;
     printf("~w1: %d\n", r);
     printf("%s\n", w1b);
     printf("---\n");
-    success = shortToBinStr(r, res, buflen);
+    success = short_to_bin_str(r, res, buflen);
     if (success < 0) {
         free_buffer(mem_resources, 3);
         return -1;
     }
-    printf("%s (%d)\n\n\n", res, binStrToShort(res)); 
+    printf("%s (%d)\n\n\n", res, bin_str_to_short(res)); 
 
     free_buffer(mem_resources, 3);
 

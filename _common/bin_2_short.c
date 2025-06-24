@@ -1,7 +1,7 @@
 #include <string.h>
 #include <mm_malloc.h>
 
-short binStrToShort(const char binary[])
+short bin_str_to_short(const char binary[])
 {
     if (strlen(binary) != 16) return -1;
     unsigned short d = 0;
@@ -16,7 +16,7 @@ short binStrToShort(const char binary[])
     return (short) d;
 }
 
-int shortToBinStr(short d, char* buffer, size_t lenght) {
+int short_to_bin_str(short d, char* buffer, size_t lenght) {
     if (!buffer) return -1;
     if (lenght != 16 + 1) return -1;
     unsigned short value = (unsigned short)d;
