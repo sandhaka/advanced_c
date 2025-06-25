@@ -14,19 +14,18 @@
 struct cmd {
     int code;
     size_t cmd_str_len;
-    short* args;
+    short args[16];
     char cmd_str[CMD_STR_LEN + 1];
 };
 
 typedef unsigned short ushort;
-typedef struct cmd command;
 
 extern int short_to_bin_str(short d, char* buffer, size_t lenght);
 
-static command commands[3] = {
-    {0, 3, NULL, "set"},
-    {1, 5, NULL, "unset"},
-    {2, 4, NULL, "read"}
+static struct cmd commands[3] = {
+    {0, 3, {0}, "set"},
+    {1, 5, {0}, "unset"},
+    {2, 4, {0}, "read"}
 };
 
 void set(void);
@@ -67,21 +66,26 @@ int main(int argc, char** argv) {
     struct cmd* cmd = parse_usr_input(usr_input);
 
     if (cmd == NULL) {
-        printf("Wrong commands arguments");
+        printf("Wrong commands arguments\n");
         return -1;
     }
 
+    printf("'%s' command selected!\n", cmd->cmd_str);
+
     switch (cmd->code)
     {
+    case 0:
+        printf("Setting bits:\n");
+        for (int i = 0; i < BITS - 1; i++)
+            printf("%d ", cmd->args[i]);
+        break;
     case 1:
         break;
-    case 2:
-        break;
-    case 3: 
+    case 2: 
         break;
     default:
         {
-            printf("Unrecognized command");
+            printf("Unrecognized command\n");
             return -1;
         }
     }
@@ -102,11 +106,12 @@ void read(void) {
 }
 
 struct cmd* parse_usr_input(const char *restrict buffer) {
-    int i, l = 0;
+    int i, a = 0, l = 0;
+
     // Parse command
     for (i = 0; i < USER_INPUT_LEN; i++) {
         char c = buffer[i];
-        if (c == ' ') { 
+        if (c == ' ' || c == '\0') { 
             break;
         }
 
@@ -116,7 +121,34 @@ struct cmd* parse_usr_input(const char *restrict buffer) {
     for (int j = 0; j < 3; j++) {
         if (l != commands[j].cmd_str_len) continue;
         if (strncmp(buffer, commands[j].cmd_str, commands[j].cmd_str_len) == 0) {
-            printf("Command found!");
+            // Eventually parse arguments
+            if (commands[j].code != 2) {
+                l = 0;
+                char arg[3];
+                for (;i < USER_INPUT_LEN; i++) {
+                    char c = buffer[i];
+                    if (c != ' ' && c != '\0') { 
+                        l++;
+                    }
+                    else if(l != 0) {
+                        if (l > 2) return NULL;
+                        strncpy(arg, buffer + (i - l), l);
+                        arg[l + 1] = '\0';
+                        l = 0;
+                        int bit = (short) atoi(arg);
+                        if (bit >= 16) return NULL;
+                        commands[j].args[a++] = bit;
+                    }
+
+                    if (c == '\0') {
+                        break;
+                    }
+                }
+            }
+
+            return &commands[j];
         }
     }
+
+    return NULL;
 }
