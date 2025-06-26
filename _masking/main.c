@@ -22,10 +22,11 @@ typedef unsigned short ushort;
 
 extern int short_to_bin_str(short d, char* buffer, size_t lenght);
 
-static struct cmd commands[3] = {
+static struct cmd commands[4] = {
     {0, 3, {0}, "set"},
     {1, 5, {0}, "unset"},
-    {2, 4, {0}, "read"}
+    {2, 4, {0}, "read"},
+    {3, 4, {0}, "exit"}
 };
 
 void set(void);
@@ -38,6 +39,7 @@ void print_menu(void) {
     printf("[set] <bits 1-16>\n");
     printf("[unset] <bits 1-16>\n");
     printf("[read]\n");
+    printf("[exit]\n");
     printf("Examples:\n");
     printf("> read\n");
     printf(". 0000000000000000\n");
@@ -45,12 +47,14 @@ void print_menu(void) {
     printf(". 0000001000000101\n");
     printf("> uset 3\n");
     printf(". 0000001000000001\n");    
+
 }
 
 int main(int argc, char** argv) {
 
     ushort flags = 0, mask;
     char usr_input[USER_INPUT_LEN + 1];
+    char flags_bin_string[BITS + 1];
     
     if (argc > 1) {
         flags = (ushort) atoi(argv[1]);
@@ -58,39 +62,50 @@ int main(int argc, char** argv) {
 
     print_menu();
 
-    if (scanf("%44[^\n]", usr_input) == -1) {
-        printf("Unrecognized command: %s\n", usr_input);
-        return -1;
-    }
+    for(;;) {
+        
+        printf("> ");
 
-    struct cmd* cmd = parse_usr_input(usr_input);
+        fgets(usr_input, USER_INPUT_LEN, stdin);
+        usr_input[USER_INPUT_LEN] = '\0';
 
-    if (cmd == NULL) {
-        printf("Wrong commands arguments\n");
-        return -1;
-    }
+        struct cmd* cmd = parse_usr_input(usr_input);
 
-    printf("'%s' command selected!\n", cmd->cmd_str);
+        if (cmd == NULL) {
+            printf("Wrong commands arguments\n");
+            continue;
+        }
 
-    switch (cmd->code)
-    {
-    case 0:
-        printf("Setting bits:\n");
-        for (int i = 0; i < BITS - 1; i++)
-            printf("%d ", cmd->args[i]);
-        break;
-    case 1:
-        break;
-    case 2: 
-        break;
-    default:
+        printf("'%s' command selected!\n", cmd->cmd_str);
+
+        switch (cmd->code)
         {
-            printf("Unrecognized command\n");
-            return -1;
+        case 0:
+            printf("Setting bits:\n");
+            for (int i = 0; i < BITS; i++)
+                printf("%d ", cmd->args[i]);
+            printf("\n");
+            break;
+        case 1:
+            printf("Unsetting bits:\n");
+            for (int i = 0; i < BITS; i++)
+                printf("%d ", cmd->args[i]);
+            printf("\n");
+            break;
+        case 2: 
+            if (short_to_bin_str(flags, flags_bin_string, BITS + 1) != 0)
+                return -1;
+            printf("Value flags: %s\n", flags_bin_string);
+            break;
+        case 3:
+            return 0;
+        default:
+            {
+                printf("Unrecognized command\n");
+                return -1;
+            }
         }
     }
-
-    return 0;
 }
 
 void set(void) {
@@ -111,14 +126,14 @@ struct cmd* parse_usr_input(const char *restrict buffer) {
     // Parse command
     for (i = 0; i < USER_INPUT_LEN; i++) {
         char c = buffer[i];
-        if (c == ' ' || c == '\0') { 
+        if (c == ' ' || c == '\0' || c == '\n') { 
             break;
         }
 
         l++;
     }
 
-    for (int j = 0; j < 3; j++) {
+    for (int j = 0; j < 4; j++) {
         if (l != commands[j].cmd_str_len) continue;
         if (strncmp(buffer, commands[j].cmd_str, commands[j].cmd_str_len) == 0) {
             // Eventually parse arguments
@@ -133,10 +148,10 @@ struct cmd* parse_usr_input(const char *restrict buffer) {
                     else if(l != 0) {
                         if (l > 2) return NULL;
                         strncpy(arg, buffer + (i - l), l);
-                        arg[l + 1] = '\0';
+                        arg[l] = '\0';
                         l = 0;
                         int bit = (short) atoi(arg);
-                        if (bit >= 16) return NULL;
+                        if (bit >= 16 || bit < 0) return NULL;
                         commands[j].args[a++] = bit;
                     }
 
