@@ -20,7 +20,7 @@ struct cmd {
 
 typedef unsigned short ushort;
 
-extern int short_to_bin_str(short d, char* buffer, size_t lenght);
+extern int short_to_bin_str(short d, char *restrict buffer, size_t lenght);
 
 static struct cmd commands[4] = {
     {0, 3, {0}, "set"},
@@ -29,9 +29,8 @@ static struct cmd commands[4] = {
     {3, 4, {0}, "exit"}
 };
 
-void set(void);
-void unset(void);
-void read(void);
+void set(const struct cmd* command, ushort* flags);
+void unset(const struct cmd* command, ushort* flags);
 struct cmd* parse_usr_input(const char *restrict buffer);
 
 void print_menu(void) {
@@ -52,7 +51,7 @@ void print_menu(void) {
 
 int main(int argc, char** argv) {
 
-    ushort flags = 0, mask;
+    ushort flags = 0;
     char usr_input[USER_INPUT_LEN + 1];
     char flags_bin_string[BITS + 1];
     
@@ -81,16 +80,18 @@ int main(int argc, char** argv) {
         switch (cmd->code)
         {
         case 0:
-            printf("Setting bits:\n");
+            printf("Setting bits: ");
             for (int i = 0; i < BITS; i++)
                 printf("%d ", cmd->args[i]);
             printf("\n");
+            set(cmd, &flags);
             break;
         case 1:
-            printf("Unsetting bits:\n");
+            printf("Unsetting bits: ");
             for (int i = 0; i < BITS; i++)
                 printf("%d ", cmd->args[i]);
             printf("\n");
+            unset(cmd, &flags);
             break;
         case 2: 
             if (short_to_bin_str(flags, flags_bin_string, BITS + 1) != 0)
@@ -108,16 +109,22 @@ int main(int argc, char** argv) {
     }
 }
 
-void set(void) {
-
+void set(const struct cmd* command, ushort* flags) {
+    for (int i = 0; i < BITS; i++) {
+        if (command->args[i] != 0) {
+            int pos = command->args[i] - 1;
+            (*flags) |= (1 << pos);
+        }
+    }
 }
 
-void unset(void) {
-
-}
-
-void read(void) {
-
+void unset(const struct cmd* command, ushort* flags) {
+    for (int i = 0; i < BITS; i++) {
+        if (command->args[i] != 0) {
+            int pos = command->args[i] - 1;
+            (*flags) &= ~(1 << pos);
+        }
+    }
 }
 
 struct cmd* parse_usr_input(const char *restrict buffer) {
@@ -136,13 +143,13 @@ struct cmd* parse_usr_input(const char *restrict buffer) {
     for (int j = 0; j < 4; j++) {
         if (l != commands[j].cmd_str_len) continue;
         if (strncmp(buffer, commands[j].cmd_str, commands[j].cmd_str_len) == 0) {
-            // Eventually parse arguments
-            if (commands[j].code != 2) {
+            if (commands[j].code < 2) { // Eventually parse arguments
+                memset(commands[j].args, 0, sizeof(commands[j].args)); // Reset last command arguments
                 l = 0;
                 char arg[3];
                 for (;i < USER_INPUT_LEN; i++) {
                     char c = buffer[i];
-                    if (c != ' ' && c != '\0') { 
+                    if (c != ' ' && c != '\0' && c != '\n' && c != '\r') { 
                         l++;
                     }
                     else if(l != 0) {
@@ -151,7 +158,7 @@ struct cmd* parse_usr_input(const char *restrict buffer) {
                         arg[l] = '\0';
                         l = 0;
                         int bit = (short) atoi(arg);
-                        if (bit >= 16 || bit < 0) return NULL;
+                        if (bit > 16 || bit < 1) return NULL;
                         commands[j].args[a++] = bit;
                     }
 
