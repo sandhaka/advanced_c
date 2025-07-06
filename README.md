@@ -185,9 +185,6 @@ int main(void) {
 - Bit manipulation techniques can be used to solve various conversion problems, often leading to more efficient solutions compared to traditional arithmetic methods. Classical conversion problems leveraging bit manipulation [📋](./_common/bin_2_short.c).
 - Bit operations can be performed on any type of integer value and characters, but cannot be performed on floating-poit values.
 - Bitwise operations with a mask are usually used to store multiple information in a variable (each bit corresponds to a setting).
-#### Masking
-- A mask can be used to set multiple bits in a byte to either on, off or inverted from on to off using a single bitwise operator.
-- Let's see a command-line utility example here [📋](./_masking/main.c) (set/unset bit into a flag variable).
 
 | Operation | Operator | Example |
 | --- | --- | --- |
@@ -196,6 +193,9 @@ int main(void) {
 | Toggling Bits | `^` (XOR) | `value ^ mask` |
 | Shifting left (multiply by 2^n) | `<<` | `value << n` | 
 | Shifting right (divide by 2^n) | `>>` | `value >> n` | 
+#### Masking
+- A mask can be used to set multiple bits in a byte to either on, off or inverted from on to off using a single bitwise operator.
+- Let's see a command-line utility example here [📋](./_masking/main.c) (set/unset bit into a flag variable).
 
 | Pattern | Code Example | Description |
 | --- | --- | --- |
@@ -207,7 +207,7 @@ int main(void) {
 | Bit Field Set | `(value & ~mask) \| (new_value << shift)` | Set multiple bits to new value |
 - Very often, all these possibilities of bit manipulations are used to pack data very efficiently.
 #### Bit fields
-A bit field id declared by the following
+A bit field is an insightful way to store data in a very efficient way. Can be used and declared as follows:
 ```c
 struct packed_str {
     unsigned int :3         // Padding, 3 bits
@@ -224,3 +224,5 @@ void main(void) {
 }
 ```
 A bit field allow you to specify the number of bits in which an int member of a structure is stored. Is more easy then use a bit masking etc.
+### Advanced Control Flow
+...
