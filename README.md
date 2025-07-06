@@ -205,3 +205,22 @@ int main(void) {
 | Single Bit Test | `(value & (1 << bit_position)) != 0` | Test if bit is test |
 | Multiple Bits Extract | `(value & mask) >> shift` | Extract and right-align bits |
 | Bit Field Set | `(value & ~mask) \| (new_value << shift)` | Set multiple bits to new value |
+- Very often, all these possibilities of bit manipulations are used to pack data very efficiently.
+#### Bit fields
+A bit field id declared by the following
+```c
+struct packed_str {
+    unsigned int :3         // Padding, 3 bits
+    unsigned int f1:1       // Flag 1, one bit
+    unsigned int f2:1       // Flag 2, one bit
+    unsigned int f3:1       // Flag 3, one bit
+    unsigned int type:8     // Type field, 8 bits
+    unsigned int index: 18  // index field, 18 bits
+};
+
+void main(void) {
+    struct packed_str data;
+    data.type = 7;
+}
+```
+A bit field allow you to specify the number of bits in which an int member of a structure is stored. Is more easy then use a bit masking etc.
