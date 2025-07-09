@@ -225,4 +225,53 @@ void main(void) {
 ```
 A bit field allow you to specify the number of bits in which an int member of a structure is stored. Is more easy then use a bit masking etc.
 ### Advanced Control Flow
-...
+- The `goto` instruction should not be used in C because it leads to logic that is too complex to interpret and makes the software difficult to maintain. However, there is one case where it can be useful to use it. When we need to exit from several levels of nested loops, the instruction saves us from creating additional interrupt logic at each level.
+- The null statement `;` does nothing, just a syntax utility when do nothing is needed! :)
+```c
+while (condition)
+    ; // do nothing, just wait for condition to become false
+```
+- The comma operator `,` is a unique binary operator that acts as sequence point and has some special characteristics that make it useful in specific scenarios like for expression: `for(i=0, j=100; i!=10; j-=10)`.
+    - In Macros:
+    ```c
+    #define DEBUG_PRINT(x) (printf("Debug: %s\n", #x), (x))
+    #define SWAP(a, b) ((a) ^= (b), (b) ^= (a), (a) ^= (b))
+
+    int result = DEBUG_PRINT(42);  // Prints "Debug: 42" and assigns 42 to result
+    ```
+    - It has a lower precedence, so:
+    ```c
+    int i = 249, 500;   // 249 is assigned
+    int j = (249, 500)  // 500 is assigned 
+    ```
+    - Array initialization tricks:
+    ```c
+    int arr[5];
+    int size = 5;
+    for (int i = 0; i < size; arr[i] = i * i, i++);  // Fill with squares
+    ```
+    - Array initialization tricks:
+    ```c
+    int arr[5];
+    int size = 5;
+    for (int i = 0; i < size; arr[i] = i * i, i++);  // Fill with squares
+    ```
+    - Return multiple values:
+    ```c
+    int calculate(int *sum, int *product, int a, int b) {
+        return (*sum = a + b, *product = a * b, 1);  // Return success flag
+    }
+    ```
+    - State Machines
+    ```c
+    enum state { IDLE, PROCESSING, DONE };
+    enum state current_state = IDLE;
+    int data = 0;
+
+    // State transition with side effects
+    int next_state = (current_state == IDLE) ? 
+        (printf("Starting processing\n"), data = get_data(), PROCESSING) :
+        (current_state == PROCESSING) ? 
+        (printf("Processing complete\n"), save_data(data), DONE) :
+        (printf("Resetting\n"), data = 0, IDLE);
+    ```
