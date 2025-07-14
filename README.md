@@ -275,3 +275,4 @@ while (condition)
         (printf("Processing complete\n"), save_data(data), DONE) :
         (printf("Resetting\n"), data = 0, IDLE);
     ```
+- `setjmp` and `longjmp` are legacy instructions, they allow you to save the current execution context (setjmp) and jump back to it later (longjmp), skipping normal function call/return flow. They are considered dangerous and hard to maintain because they break normal control flow and can cause resource leaks (e.g., skipping destructors, not freeing memory).
