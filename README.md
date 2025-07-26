@@ -392,3 +392,6 @@ int main(void) {
     fatal_error("Something went wrong!");
     // Code here is unreachable
 }
+```
+### Union
+Unions are particularly useful in embedding programming, situations where direct access to the hardware i needed.
