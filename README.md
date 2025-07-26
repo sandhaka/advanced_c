@@ -4,6 +4,48 @@ Advanced C Programming Notes
 > Collected from courses and books to brush up my C know-how. 
 > The topics noted is a personal choice.
 
+### C Language Standards Overview
+
+The C programming language has evolved through several standards, each introducing new features, improvements, and clarifications. Here’s a chronological summary of the main C standards, with brief descriptions and usage recommendations:
+
+#### 1. K&R C (1978)
+- The original version described by Brian Kernighan and Dennis Ritchie in "The C Programming Language" book.
+- Historical interest only. Not recommended for modern development.
+
+#### 2. ANSI C / C89 / C90 (1989/1990)
+- The first standardized version by ANSI (American National Standards Institute) in 1989, later adopted as ISO C90. Introduced function prototypes, standard library, and improved portability.
+- Still found in legacy codebases. Use only if targeting very old systems or compilers.
+
+#### 3. C95 (ISO/IEC 9899:1995)
+- A minor revision of C90, mainly for bug fixes and clarifications. Added some library functions like `wchar_t` support.
+- Rarely targeted directly; mostly a transitional standard.
+
+#### 4. C99 (ISO/IEC 9899:1999)
+- Major update introducing features like `inline` functions, variable-length arrays, new data types (`long long`, `stdint.h`), single-line comments (`//`), and improved support for floating-point arithmetic.
+- Widely supported and recommended for modern codebases that need these features. Good balance of portability and modern features.
+
+#### 5. C11 (ISO/IEC 9899:2011)
+- Added multi-threading support (`<threads.h>`), improved Unicode support, anonymous structures/unions, and safer library functions (e.g., `gets()` removed).
+-  Recommended for new projects if your toolchain supports it. Brings safer and more robust programming features.
+
+#### 6. C17 (ISO/IEC 9899:2018)
+- Bug-fix and clarifications release over C11. No major new features.
+- Use as a drop-in replacement for C11 if available.
+
+#### 7. C23 (ISO/IEC 9899:2023)
+- The latest standard, with further improvements, new library functions, and language enhancements. Adoption is ongoing.
+- Use if you need the latest features and your compiler supports it.
+
+---
+
+**Recommendations:**
+- For maximum portability, use **C89/C90** features only.
+- For modern development, **C99** or **C11** are recommended (C11 preferred for new projects).
+- Use **C17** or **C23** if you need the latest features and your toolchain supports them.
+- Always check your compiler’s support for the chosen standard.
+
+> **Tip:** You can specify the C standard in your build system or compiler (e.g., `-std=c11` for GCC/Clang).
+
 ### Modules and Variables
 - Generally, a C file (.h and .c files) is a module.
 - In a module (in a file) I can declare a local variable or a global variable. 
@@ -276,3 +318,77 @@ while (condition)
         (printf("Resetting\n"), data = 0, IDLE);
     ```
 - `setjmp` and `longjmp` are legacy instructions, they allow you to save the current execution context (setjmp) and jump back to it later (longjmp), skipping normal function call/return flow. They are considered dangerous and hard to maintain because they break normal control flow and can cause resource leaks (e.g., skipping destructors, not freeing memory).
+### Working with files
+Just some raccomandations when working with files streams,
+- Use fopen()/fclose() for file management.
+- Use fgets()/fputs() for text files.
+- Use fread()/fwrite() for binary files.
+- Always check the return value of these functions for errors.
+```c
+#include <stdio.h>
+
+int main(void) {
+    FILE *fp = fopen("example.txt", "w");  // Open for writing
+    if (!fp) {
+        perror("Failed to open file for writing");
+        return 1;
+    }
+    fputs("Hello, file!\n", fp);           // Write a string
+    fclose(fp);                            // Close after writing
+
+    fp = fopen("example.txt", "r");        // Open for reading
+    if (!fp) {
+        perror("Failed to open file for reading");
+        return 1;
+    }
+    char buffer[100];
+    while (fgets(buffer, sizeof(buffer), fp)) { // Read line by line
+        printf("Read: %s", buffer);
+    }
+    fclose(fp);                            // Close after reading
+    return 0;
+}
+```
+### Advanced Function Concepts
+#### Variadic Functions
+A variadic function in C is a function that can accept a variable number of arguments. The most common example is printf(). To create a variadic function, you use the macros defined in `<stdarg.h>`: `va_list`, `va_start`, `va_arg`, `and va_end`. So, to define a variadic function:
+```C
+int sum(int count, ...) { // Accept a variable number of arguments of type int
+    int total = 0;
+    va_list args;
+    va_start(args, count); // Initialize args to store all values after count
+
+    for (int i = 0; i < count; i++) {
+        total += va_arg(args, int); // Access next int argument
+    }
+
+    va_end(args); // Clean up
+    return total;
+}
+```
+`va_start()` uses the address of the last fixed parameter (count) to find the start of the variable arguments that follow.
+#### Inline Functions
+Added from C99, inline function avoid the amount of overhead that comes along with invoking a function. The point it to hint the compiler that it worth making some form of extra effort to call the function faster than it would otherwise. Usually by substituite the code of the function into its caller (eliminating the call), the code of the function is just placed into the caller every time that function is used. So, no call at all. 
+But in-lining not guaranteed that code will run faster, it depends purely on your code design and is debatable.
+```c
+inline void randomFunction();
+```
+The inline function has to be in the same file as the function call (internal linkage). Should always use the inline function specifier along with the static storage-class spcecifier.
+#### _Noreturn Function Specifier
+The `_Noreturn` function specifier, introduced in the C11 standard, is used to indicate that a function does **not return to the caller**. This helps the compiler with optimization and static analysis (such as warning about unreachable code).
+- Place `_Noreturn` before the function declaration or definition.
+- Typically used for functions that terminate the program (e.g., by calling `exit()`, `abort()`, or entering an infinite loop).
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdnoreturn.h> // Required for _Noreturn
+
+_Noreturn void fatal_error(const char *msg) {
+    fprintf(stderr, "Fatal error: %s\n", msg);
+    exit(1); // Never returns
+}
+
+int main(void) {
+    fatal_error("Something went wrong!");
+    // Code here is unreachable
+}
