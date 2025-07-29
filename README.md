@@ -393,5 +393,19 @@ int main(void) {
     // Code here is unreachable
 }
 ```
-### Union
-Unions are particularly useful in embedding programming, situations where direct access to the hardware i needed.
+### Unions
+Unions are particularly useful in embedding programming, situations where direct access to the hardware is needed. Unlike structs, unions store all the values at the same memory position (so, memory is shared along the members) and only one member can be accessed at a time. So, the size of a union is equal to the size of the largest member.
+```c
+union Data {
+    int i;
+    float f;
+    char str[16]; // Largest member
+} data;
+
+int main()
+{
+    printf("The size of the Data union is: %d\n", sizeof(data));
+    return 0;
+}
+```
+The program output "The size of the Data union is: 16".
