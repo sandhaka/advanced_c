@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
     // int* reg_ptr = &regVariable; // Compile-time error
 }
 ```
-#### [Storage classes](./_storage_classes/main.c) Overview
+#### Storage classes Overview
 | Storage Class | Declaration Location | Scope | Lifetime | 
 | --- | --- | --- | --- |
 | `auto` | Inside a function block | Within the function/block | Until the function block completes |
@@ -83,6 +83,7 @@ int main(int argc, char** argv) {
 | `extern` | Outside all functions  | Entire file where declared as extern | Until the program terminates |
 | `static` local | Inside a function block  | Within the function/block | Until the program terminates |
 | `static` global | Outside all functions  | Entire file in which it's declared | Until the program terminates |
+An example, [here](./_storage_classes/main.c)
 ### Advanced Data Types
 - `#define` preprocessor directive can be used to define symbolic, or manifest, constants in a program. Is limited to one line length (but backslash/newline can be used to spread on multiple physical lines). Executed before the compilation. It's literally a substitution before compilation.
 - Primary use of the `#define` preprocessor is to assign a symbolic name: `#define YES 1` or `#define PI 3.14`
