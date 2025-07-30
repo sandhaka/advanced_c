@@ -3,7 +3,7 @@
 
 typedef union {
     float f;
-    unit32_t u;
+    uint32_t u;
 } Data;
 
 int main() {
@@ -12,7 +12,7 @@ int main() {
     data.u = *(uint32_t*)&data.f;
 
     printf("Float: %f\n", data.f);
-    printf("Bits: 0x%08X\n", data.u);
+    printf("Bits pattern of float value: 0x%08X\n", data.u);
 
     return 0;
 }

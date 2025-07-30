@@ -49,8 +49,8 @@ The C programming language has evolved through several standards, each introduci
 ### Modules and Variables
 - Generally, a C file (.h and .c files) is a module.
 - In a module (in a file) I can declare a local variable or a global variable. 
-    - Local variables can be used inside the function where they are defined. Theay are allocated on the stack or on the heap if malloc is used explicitly. [📋](./_stack_heap_alloc/main.c)
-    - Global variables can be used in any other module (declaring them as extern [📋](./_files_communication/src/))
+    - Local variables can be used inside the function where they are defined. Theay are allocated on the stack or on the heap if malloc is used explicitly, see a example [here](./_stack_heap_alloc/main.c)
+    - Global variables can be used in any other module (declaring them as extern. [Example](./_files_communication/src/))
     - If a global variable is declared with `static` it's valid only in the same module.
     ```C
     int number_from_function = 42;  // Global variable
@@ -222,9 +222,9 @@ int main(void) {
   vector_add(arr, arr, arr, 4);  // Wrong! Pointers overlap
   ```
 - All these features still rely on the developer responsability but produce effective more optimized code when used correctly!
-- Let's see a comprensive example here [📋](./_t_qualifiers/main.c).
+- Let's see a comprensive example [here](./_t_qualifiers/main.c).
 ### Bit Manipulation
-- Bit manipulation techniques can be used to solve various conversion problems, often leading to more efficient solutions compared to traditional arithmetic methods. Classical conversion problems leveraging bit manipulation [📋](./_common/bin_2_short.c).
+- Bit manipulation techniques can be used to solve various conversion problems, often leading to more efficient solutions compared to traditional arithmetic methods. Classical conversion problems leveraging bit manipulation [example](./_common/bin_2_short.c).
 - Bit operations can be performed on any type of integer value and characters, but cannot be performed on floating-poit values.
 - Bitwise operations with a mask are usually used to store multiple information in a variable (each bit corresponds to a setting).
 
@@ -237,7 +237,7 @@ int main(void) {
 | Shifting right (divide by 2^n) | `>>` | `value >> n` | 
 #### Masking
 - A mask can be used to set multiple bits in a byte to either on, off or inverted from on to off using a single bitwise operator.
-- Let's see a command-line utility example here [📋](./_masking/main.c) (set/unset bit into a flag variable).
+- Let's see a command-line utility example [here](./_masking/main.c) (set/unset bit into a flag variable).
 
 | Pattern | Code Example | Description |
 | --- | --- | --- |
@@ -409,3 +409,5 @@ int main()
 }
 ```
 The program output "The size of the Data union is: 16".
+#### Type punning
+Type punning is a technique in C where you access the same memory location using different types, allowing you to reinterpret the underlying bit pattern. It’s commonly used to inspect or manipulate the binary representation of data (e.g., viewing a float as a uint32_t). An example [here](./_type_punning/main.c).
