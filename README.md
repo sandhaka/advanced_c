@@ -83,6 +83,7 @@ int main(int argc, char** argv) {
 | `extern` | Outside all functions  | Entire file where declared as extern | Until the program terminates |
 | `static` local | Inside a function block  | Within the function/block | Until the program terminates |
 | `static` global | Outside all functions  | Entire file in which it's declared | Until the program terminates |
+
 An example, [here](./_storage_classes/main.c)
 ### Advanced Data Types
 - `#define` preprocessor directive can be used to define symbolic, or manifest, constants in a program. Is limited to one line length (but backslash/newline can be used to spread on multiple physical lines). Executed before the compilation. It's literally a substitution before compilation.
@@ -412,3 +413,87 @@ int main()
 The program output "The size of the Data union is: 16".
 #### Type punning
 Type punning is a technique in C where you access the same memory location using different types, allowing you to reinterpret the underlying bit pattern. It’s commonly used to inspect or manipulate the binary representation of data (e.g., viewing a float as a uint32_t). An example [here](./_type_punning/main.c).
+### Macros
+Essentially, a macro is a piece of code based on the `#define` directive. They are a text processing feature and are "expanded" and replaced by macro definitions. They are considered outdated in terms of modern programming practices however, macros are still widely used because they make things easier for the programmer.
+Macros are similar to functions, but there are some huge differenices under the hood. Macros are pre-processed which means that all the macros would be processed before your program compiles. Due to theirs inline nature, macros are faster if used in loops, calling many times they could speed up the execution. Keeps in consideration also the facts that it is much harder to debug a macro than when you use a function.
+```c
+#include <stdio.h>
+
+#define MY_SUM(a, b) a + b
+
+int main() {
+    printf("2 + 1 = %d\n", MY_SUM(2, 1));
+}
+```
+Is equivalent to:
+```c
+#include <stdio.h>
+
+inline static int sum(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    printf("2 + 1 = %d\n", sum(2, 1));
+}
+```
+Inline functions are the best alternative to macros.
+
+Macros should use parentheses around each argument and around he definition as a whole that ensures the enclosed terms are grouped properly in an expression (avoid operator precedence).
+```c
+#define SQUARE(x) ((x) * (x))  // Correct: parentheses around argument and whole definition
+
+int main() {
+    int a = 5;
+    int b = 2;
+    int result = SQUARE(a + b); // Expands to ((a + b) * (a + b)) = 49
+    printf("Result: %d\n", result); // Output: Result: 49
+}
+```
+#### Variadic Macros
+```c
+#include <stdio.h>
+
+#define Warning(format, ...) fprintf(stderr, format, __VA_ARGS__)
+
+int main() {
+    Warning("%s: This program is here\n", "Sandhaka");
+    return 0;
+}
+```
+#### View expanded result
+So, since macro are essentially text substitutions, when debugging code with macros can be useful to view directly these substitutions.
+On any Unix-like system, use the gcc or clang compiler with the -E option:
+```sh
+gcc -E main.c
+```
+or
+```sh
+clang -E your_file.c > expanded.c
+```
+This command runs the preprocessor only, outputting the source code with all macros expanded and includes processed.
+```c
+#define SQUARE(x) ((x) * (x))
+
+int main() {
+    int result = SQUARE(2 + 3);
+    return result;
+}
+```
+Will output:
+```txt
+# 1 "main.c"
+# 1 "<built-in>" 1
+# 1 "<built-in>" 3
+# 465 "<built-in>" 3
+# 1 "<command line>" 1
+# 1 "<built-in>" 2
+# 1 "main.c" 2
+
+
+
+int main() {
+    int result = ((2 + 3) * (2 + 3));
+    return result;
+}
+```
