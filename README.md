@@ -538,5 +538,14 @@ int main(void) {
 `printf(str(Progamming with MaCrOs!!))` Is equivalent to: `printf("Progamming with MaCrOs!!")`. 
 - The `##` operator is called token-pasting operator (or concatenation operator). It joins two tokens together during macro expansion to form a single token.
 ```c
-... // TODO
+#define TOKENCONCAT(x, y) x##y // Is replaced by OK in the program
 ```
+```c
+#define make_function(name) int my_##name(int foo) {}
+make_function(bar)
+// Will define a function called my_bar()
+```
+Don't you think it's pretty ugly? :)
+Just look a more complex example.
+### Advanced Debugging, analysis and Compiler options
+...
