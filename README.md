@@ -1,3 +1,5 @@
+<samp>
+
 Advanced C Programming Notes
 ---
 > Intermediate to advanced notes for C programming.
@@ -548,13 +550,58 @@ make_function(bar)
 Don't you think it's pretty ugly? :)
 Just look a more complex example.
 #### Some predefined Macros
-- `__FILE__` the current file name
-- `__LINE__` the current line number
-- `__func__` the name of any function when placed inside a function of the current file (not standard)
-- `__DATE__` compilation date
-- `__TIME__` compilation time
-- `__STDC__` 
+- `__FILE__`  
+  Expands to a string literal containing the name of the current source file. Useful for logging and debugging to indicate where a message originated.
 
+- `__LINE__`  
+  Expands to the current line number (as an integer constant) in the source file. Often used with `__FILE__` for error reporting.
+
+- `__func__`  
+  Expands to a string literal containing the name of the current function. Standardized in C99. Useful for debugging and logging function entry/exit.
+
+- `__DATE__`  
+  Expands to a string literal representing the date the source file was compiled (e.g., "Aug  9 2025").
+
+- `__TIME__`  
+  Expands to a string literal representing the time the source file was compiled (e.g., "14:23:05").
+
+- `__STDC__`  
+  Defined as `1` when the compiler complies with the ANSI C standard (ISO C). Can be used to check for standard compliance in conditional compilation.
+
+**Example usage:**
+```c
+printf("File: %s, Line: %d, Function: %s\n", __FILE__, __LINE__, __func__);
+printf("Compiled on %s at %s\n", __DATE__, __TIME__);
+#ifdef __STDC__
+    printf("Standard C compiler detected.\n");
+#endif
+```
 Very useful for print useful log or error messages!
 ### Advanced Debugging, analysis and Compiler options
-...
+The compilation process of a C program normally consists in four phases: Preprocessing, Compilation, Assembly and Linking. But there are specific options that can you pass to the compiler that will help with the process of debugging, optimization and other anhancements.
+<p align="center">
+  <img src="./compilation-process.png" alt="The C compilation process" width="400"/>
+</p>
+
+- Pre-Processing
+Expands macros, includes headers, and processes preprocessor directives.
+```sh
+gcc -E main.c -o main.i
+```
+- Compilation 
+Converts preprocessed code to assembly language.
+```sh
+gcc -S main.i -o main.s
+```
+- Assembly
+Converts assembly code to machine code (object file).
+```c
+gcc -c main.s -o main.o
+```
+- Linking
+Links the object files and libraries to create the final executable.
+```c
+gcc main.o -o main
+```
+
+</samp>
