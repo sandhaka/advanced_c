@@ -547,5 +547,14 @@ make_function(bar)
 ```
 Don't you think it's pretty ugly? :)
 Just look a more complex example.
+#### Some predefined Macros
+- `__FILE__` the current file name
+- `__LINE__` the current line number
+- `__func__` the name of any function when placed inside a function of the current file (not standard)
+- `__DATE__` compilation date
+- `__TIME__` compilation time
+- `__STDC__` 
+
+Very useful for print useful log or error messages!
 ### Advanced Debugging, analysis and Compiler options
 ...
