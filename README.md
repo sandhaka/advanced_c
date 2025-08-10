@@ -144,6 +144,8 @@ int main(void) {
 }
 ```
 . Designed initializers help to declare an array of elements with predefined value. Is pretty simple: `struct point {int x, y;};`. `struct point pts[5] = { [2].y = 5,  [2].x = 6}`. Initialize only the third element of the array.
+
+. `unsigned` can be used with char, short, int, and long. If you assign a negative value to an unsigned variable, it wraps around (underflows). Useful for bitwise operations, counting, and when negative values are not needed.
 ### Type Qualifiers
 . The `const` keyword is widely used in applications. Not only for constant value delcarations.
 - `const float *pf;` Is a pointer to constant float value. The value cannot change.
@@ -577,7 +579,7 @@ printf("Compiled on %s at %s\n", __DATE__, __TIME__);
 #endif
 ```
 Very useful for print useful log or error messages!
-### Advanced Debugging, analysis and Compiler options
+### Advanced Debugging and Compiler options
 The compilation process of a C program normally consists in four phases: Preprocessing, Compilation, Assembly and Linking. But there are specific options that can you pass to the compiler that will help with the process of debugging, optimization and other anhancements.
 <p align="center">
   <img src="./compilation-process.png" alt="The C compilation process" width="400"/>
@@ -603,5 +605,89 @@ Links the object files and libraries to create the final executable.
 ```c
 gcc main.o -o main
 ```
+. The `-Wall` compiler option stands for "Warn All". It enables a broad set of useful warning messages about possible issues in your code, such as:
+- Unused variables or functions
+- Implicit function declarations
+- Suspicious pointer conversions
+- Missing return statements
+- Uninitialized variables
+- And many more common mistakes
 
+. Optimization flags are options to control various sort of optimizations. Without any option, the compilter's goal is to reduce cost of compilation and to make debugging produce the expected results. Turning on optimization flags makes the compiler attempt to improve the performance at expense of compilation time and ability to debug the program. You can invoke gcc with `-Q --help=optimizers` to find out the exact set of optimizations that are enabled at each level.
+
+. To inspect the shared library dependencies of an executable, use `ldd <binary>`: 
+- **Linux:** `ldd /usr/bin/ls`  
+- **macOS:** `otool -L /bin/ls`  
+- **Windows:** Use "Dependency Walker" GUI or run `dumpbin /DEPENDENTS myprog.exe` in the Visual Studio Developer Command Prompt.
+#### GDB Basic
+(GNU Debugger) is a powerful tool for debugging C programs. Here are the main features and commonly used commands:
+```sh
+  gdb ./myprogram
+```
+. Running and Controlling Execution:
+- `run` (or r): Start the program.
+- `quit` (or q): Exit GDB.
+- `kill`: Stop the running program.
+
+. Breakpoints:
+- `break main` or `b main`: Set a breakpoint at main.
+- `break` file.c:42: Break at line 42 in file.c.
+- `break function_name`: Break at the start of a function.
+- `delete`: Remove all breakpoints.
+- `disable/enable`: Temporarily disable/enable breakpoints.
+
+. Stepping Through Code:
+- `next` (or `n`): Step to the next line (skip over function calls).
+- `step` (or `s`): Step into function calls.
+- `continue` (or `c`): Resume execution until next breakpoint.
+- `finish`: Run until the current function returns.
+
+. Inspecting State:
+- `print variable` (or `p variable`): Print the value of a variable.
+- `display variable`: Automatically print variable at each stop.
+- `info locals`: Show all local variables.
+- `info breakpoints`: List all breakpoints.
+- `backtrace` (or `bt`): Show the call stack.
+- `list` (or `l`): Show source code around the current line.
+
+. Modifying State:
+- `set variable x=5`: Change the value of variable x to 5.
+
+. Advanced:
+- `watch variable`: Stop when the variable changes.
+- `info threads`: List all threads.
+- `thread <num>`: Switch to a specific thread.
+- `attach <pid>`: Attach to a running process.
+#### Core Dump
+A dump (core file) is generated when a program crashes or is terminated abnormally because a segmentation fault, or other types of illegal operations or memory access. This file contains a snapshot of the contents of process's memory at the time it terminated.
+
+. You need to enable them using the `ulimit -c unlimited` command in your terminal before running your program in some system (like macOS).
+
+. `gdb` (`lldb` on macOS) can open a core/dump file to analyze the process state at crash time (as previously showed for debugging).
+
+#### Analysis with external tools
+Each operating system has its own set of tools for debugging, profiling, and binary inspection. Here’s a summary of common tools by OS type:
+
+. Linux:
+- gdb – Debugger for analyzing running programs and core dumps.
+- valgrind – Memory error detector and profiler.
+- strace – Trace system calls.
+- ldd – List shared library dependencies.
+- objdump, readelf, nm – Inspect binaries and symbols.
+
+. macOS:
+- lldb – Default debugger (replaces gdb).
+- Instruments – Profiling and performance analysis (part of Xcode).
+- otool – Inspect Mach-O binaries and dependencies.
+- dtruss – Trace system calls (DTrace-based).
+- leaks – Memory leak detection.
+
+. Windows:
+- Visual Studio Debugger – Full-featured GUI debugger.
+- WinDbg – Advanced debugger for Windows binaries and dumps.
+- Dependency Walker – Inspect DLL dependencies.
+- Process Explorer – Inspect running processes.
+- dumpbin – Inspect binary files and dependencies.
+
+### 
 </samp>
