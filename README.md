@@ -773,6 +773,25 @@ void signal(int(*funptr)()); // Used as a function parameter
 
 . `qsort` prototype using function pointer as compare method parameter example:
 ```c
-void qsort(void *base, size_t num_elements, size_t element_size, int (*compare)(void const *, void const *));
+void qsort(
+    void *base, 
+    size_t num_elements, 
+    size_t element_size, 
+    int (*compare)(void const *, void const *));
 ```
+#### Void pointers
+A void pointer in a generic pointer (without data type). 
+```c
+void *vp;
+int a = 100;
+vp = &a;
+```
+We will always have to cast the address in the void pointer to some other pointer type that points to a concrete data type before deferencing it `(int *)vp;`.
+
+. It is useful for:
+- Generic functions: Functions like malloc, free, and qsort use void pointers to accept or return pointers to any data type.
+- Data structures: Allows creation of generic data structures (e.g., linked lists, stacks) that can store any type of data.
+- Type-agnostic code: Enables writing code that works with different data types without knowing the type in advance.
+
+
 </samp> 
