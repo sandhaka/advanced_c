@@ -6,6 +6,11 @@
 * Using macros to speed up a sort algorithm
 */
 
+#define SWAP_M(a, p1, p2) \
+    int t = a[p1]; \
+    a[p1] = a[p2]; \
+    a[p2] = t;
+
 inline static void usage(const char* pr) {
     printf("Sorting array of int, usage:\n");
     printf("%s 2 7 1 10 4 1\n", pr);
@@ -17,23 +22,17 @@ inline static void show(const int * const numbrs, size_t length) {
     printf("\n");
 }
 
-inline static void swap(int * const restrict a, int p1, int p2) {
-    int temp = a[p1];
-    a[p1] = a[p2];
-    a[p2] = temp;
-}
-
 static int partition(int * const restrict numbrs, int lo, int hi) {
     int pivot = numbrs[hi];
     int i = lo - 1;
     for (int j = lo; j < hi; j++) {
         if (numbrs[j] <= pivot) {
             i++;
-            swap(numbrs, i, j);
+            SWAP_M(numbrs, i, j);
         }
     }
     i++;
-    swap(numbrs, i, hi);
+    SWAP_M(numbrs, i, hi);
     return i;
 }
 
