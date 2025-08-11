@@ -689,5 +689,90 @@ Each operating system has its own set of tools for debugging, profiling, and bin
 - Process Explorer – Inspect running processes.
 - dumpbin – Inspect binary files and dependencies.
 
-### 
-</samp>
+### Advanced Pointers
+A pointer points to a location in memory and thus used to store the address of a variables. 
+<p align="center">
+  <img src="./ptr.png" alt="Pointers" width="400"/>
+</p>
+So, pointers and pointers to pointers can be declared and usued as in the following example:
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    int** d_ptr;
+    int* ptr;
+    int v = 10;
+
+    // Initialize ptr with the address of variable v.
+    ptr = &v; 
+    // Initialize the double pointer as pointer of pointer of v
+    d_ptr = &ptr;
+
+    // Deference the first pointer
+    printf("%d\n", *ptr); // 10
+    
+    // Deference the double pointer
+    printf("%d\n", **d_ptr); // 10
+}
+```
+#### Dynamic memory allocation
+Double pointers are often used as function arguments when you need a function to modify the value of a pointer in the caller or to work with dynamically allocated arrays of pointers.
+```c
+#include <stdlib.h>
+#include <stdio.h>
+
+void allocate_32(int** array) {
+    *array = (int*) malloc(sizeof(int) * 32);
+}
+
+int main(void) {
+    int* array = NULL;
+        
+    printf("Address: %p\n", (void*)array); // Array address: 0x0
+
+    allocate_32(&array);
+
+    printf("Address: %p\n", (void*)array); // Array address: 0x600000ee4080
+}
+```
+Due to malloc return type, using int* argument `allocate_32(int* array)` lead to an error because arguments are passed by copy, so data returned by malloc is assigned to a local copy variable in this case. This is becouse use double pointers is mandatory in this case: `allocate_32(int** array)`.
+#### Function pointers
+A function pointer can be used as an argument to another function. For example a common application for function pointers is to create what is known as dispatch tables. You can create tables that contain pointers to functions to be called. Each entry in the table could contain both the command name and a pointer to a function to call to process that particular command.
+
+. Declare a function pointer is a little more complicate than delcaring a pointer to a data type. A function pointer holds an address and must also define a prototype. To specify the function type, you specify the function signature.
+
+. The return type `int` for the function, the de-referenced value `(*pfunction)` and the parameter types for a function (`int`) with parentheses.
+```c
+int (*pfunction)(int); // Just the definition
+```
+. The parentheses are essential in the declaration because of the operators' precedence. The declaration without the parentheses `int *pfunction (int);` will declare a function pfunction that returns an integer pointer that is not our intention in this case.
+
+. To set your function pointer to an existing specific function, you simply assign the name of the function to it.
+```c
+int lookup(int) {...}
+pfunction = lookup;
+```
+> You can use either `lookup` or `&lookup` when assigning to a function pointer. Both assignments are correct.
+
+. To invoke the function you can apply the function call operator to the pointer listing any arguments to the function inside the parenthesis. No deference operator are required.
+```c
+int value = pfunction(5);
+```
+
+. It is common to use typedefs with complex types such as function pointers. 
+```c
+typedef int (*funptr)();
+```
+
+. You can also use a function pointer in common operations:
+```c
+unsigned ptrsize = sizeof(int(*funptr)()); // Get the size of a function pointer
+void signal(int(*funptr)()); // Used as a function parameter
+```
+
+. `qsort` prototype using function pointer as compare method parameter example:
+```c
+void qsort(void *base, size_t num_elements, size_t element_size, int (*compare)(void const *, void const *));
+```
+</samp> 
