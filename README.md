@@ -779,6 +779,38 @@ void qsort(
     size_t element_size, 
     int (*compare)(void const *, void const *));
 ```
+The following example show the use case of a function pointers table
+```c
+#include <stdio.h>
+
+// Define some operations
+int add(int a, int b)    { return a + b; }
+int sub(int a, int b)    { return a - b; }
+int mul(int a, int b)    { return a * b; }
+int divide(int a, int b) { return b != 0 ? a / b : 0; }
+
+// Define a function pointer type for operations
+typedef int (*operation)(int, int);
+
+int main(void) {
+    // Table of function pointers
+    operation ops[4] = { add, sub, mul, divide };
+    const char* op_names[4] = { "add", "sub", "mul", "div" };
+
+    int a = 20, b = 5;
+    int choice = 2; // 0: add, 1: sub, 2: mul, 3: div
+
+    printf("Operation: %s\n", op_names[choice]);
+    printf("Result: %d\n", ops[choice](a, b)); // Call the chosen operation
+
+    // Example: loop through all operations
+    for (int i = 0; i < 4; i++) {
+        printf("%s(%d, %d) = %d\n", op_names[i], a, b, ops[i](a, b));
+    }
+
+    return 0;
+}
+```
 #### Void pointers
 A void pointer in a generic pointer (without data type). 
 ```c
@@ -792,6 +824,5 @@ We will always have to cast the address in the void pointer to some other pointe
 - Generic functions: Functions like malloc, free, and qsort use void pointers to accept or return pointers to any data type.
 - Data structures: Allows creation of generic data structures (e.g., linked lists, stacks) that can store any type of data.
 - Type-agnostic code: Enables writing code that works with different data types without knowing the type in advance.
-
 
 </samp> 
