@@ -689,6 +689,17 @@ Each operating system has its own set of tools for debugging, profiling, and bin
 - Process Explorer – Inspect running processes.
 - dumpbin – Inspect binary files and dependencies.
 
+### Linking
+After generating object code, the compiler also invokes the linker, the process of collecting and combining multiple object files in order to create a single executable file. A linker can accomplish this task in two ways.
+
+. Static linking: When linker making copy of all used library functions to the exutable file
+
+. Dynamic linking: When linker does not require the code to be copied, it is done by just placing the name of the library in the binary file (on runtime, program and libraries are in memory).
+
+Dynamic libraries are called "lib-something.so". Static libraries are called "something.a".
+
+Linking these libraries is an operation that differ by platform types.
+
 ### Advanced Pointers
 A pointer points to a location in memory and thus used to store the address of a variables. 
 <p align="center">
