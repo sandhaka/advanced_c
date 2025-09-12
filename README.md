@@ -6,7 +6,51 @@ Advanced C Programming Notes
 > Collected from courses and books to brush up my C know-how. 
 > The topics noted is a personal choice.
 
-### C Language Standards Overview
+## Index
+- [Part One - The language](#part-one---the-language)
+  - [Standards Overview](#standards-overview)
+    - [1. K&R C (1978)](#1-kr-c-1978)
+    - [2. ANSI C / C89 / C90 (1989/1990)](#2-ansi-c--c89--c90-19891990)
+    - [3. C95 (ISO/IEC 9899:1995)](#3-c95-isoiec-98991995)
+    - [4. C99 (ISO/IEC 9899:1999)](#4-c99-isoiec-98991999)
+    - [5. C11 (ISO/IEC 9899:2011)](#5-c11-isoiec-98992011)
+    - [6. C17 (ISO/IEC 9899:2018)](#6-c17-isoiec-98992018)
+    - [7. C23 (ISO/IEC 9899:2023)](#7-c23-isoiec-98992023)
+  - [Modules and Variables](#modules-and-variables)
+    - [Storage classes Overview](#storage-classes-overview)
+  - [Advanced Data Types](#advanced-data-types)
+  - [Type Qualifiers](#type-qualifiers)
+  - [Bit Manipulation](#bit-manipulation)
+    - [Masking](#masking)
+    - [Bit fields](#bit-fields)
+  - [Advanced Control Flow](#advanced-control-flow)
+  - [Working with files](#working-with-files)
+  - [Advanced Function Concepts](#advanced-function-concepts)
+    - [Variadic Functions](#variadic-functions)
+    - [Inline Functions](#inline-functions)
+    - [_Noreturn Function Specifier](#noreturn-function-specifier)
+  - [Unions](#unions)
+    - [Type punning](#type-punning)
+  - [Macros](#macros)
+    - [Variadic Macros](#variadic-macros)
+    - [View expanded result](#view-expanded-result)
+    - [Preprocessor operators](#preprocessor-operators)
+    - [Some predefined Macros](#some-predefined-macros)
+  - [Advanced Debugging and Compiler options](#advanced-debugging-and-compiler-options)
+    - [Linking](#linking)
+    - [GDB Basic](#gdb-basic)
+    - [Core Dump](#core-dump)
+    - [Analysis with external tools](#analysis-with-external-tools)
+  - [Advanced Pointers](#advanced-pointers)
+    - [Dynamic memory allocation](#dynamic-memory-allocation)
+    - [Function pointers](#function-pointers)
+    - [Void pointers](#void-pointers)
+- [Part Two - C Programming](#part-two---c-programming)
+  - [Interprocess Communication](#interprocess-communication)
+
+## Part One - The language
+*The syntax, built-in functions and the compiler*
+### Standards Overview
 
 The C programming language has evolved through several standards, each introducing new features, improvements, and clarifications. Here’s a chronological summary of the main C standards, with brief descriptions and usage recommendations:
 
@@ -619,6 +663,16 @@ gcc main.o -o main
 - **Linux:** `ldd /usr/bin/ls`  
 - **macOS:** `otool -L /bin/ls`  
 - **Windows:** Use "Dependency Walker" GUI or run `dumpbin /DEPENDENTS myprog.exe` in the Visual Studio Developer Command Prompt.
+#### Linking
+After generating object code, the compiler also invokes the linker, the process of collecting and combining multiple object files in order to create a single executable file. A linker can accomplish this task in two ways.
+
+. Static linking: When linker making copy of all used library functions to the exutable file
+
+. Dynamic linking: When linker does not require the code to be copied, it is done by just placing the name of the library in the binary file (on runtime, program and libraries are in memory).
+
+Dynamic libraries are called "lib-something.so". Static libraries are called "something.a".
+
+Linking these libraries is an operation that differ by platform types.
 #### GDB Basic
 (GNU Debugger) is a powerful tool for debugging C programs. Here are the main features and commonly used commands:
 ```sh
@@ -688,17 +742,6 @@ Each operating system has its own set of tools for debugging, profiling, and bin
 - Dependency Walker – Inspect DLL dependencies.
 - Process Explorer – Inspect running processes.
 - dumpbin – Inspect binary files and dependencies.
-
-### Linking
-After generating object code, the compiler also invokes the linker, the process of collecting and combining multiple object files in order to create a single executable file. A linker can accomplish this task in two ways.
-
-. Static linking: When linker making copy of all used library functions to the exutable file
-
-. Dynamic linking: When linker does not require the code to be copied, it is done by just placing the name of the library in the binary file (on runtime, program and libraries are in memory).
-
-Dynamic libraries are called "lib-something.so". Static libraries are called "something.a".
-
-Linking these libraries is an operation that differ by platform types.
 
 ### Advanced Pointers
 A pointer points to a location in memory and thus used to store the address of a variables. 
@@ -831,9 +874,14 @@ vp = &a;
 ```
 We will always have to cast the address in the void pointer to some other pointer type that points to a concrete data type before deferencing it `(int *)vp;`.
 
-. It is useful for:
+. It's useful for:
 - Generic functions: Functions like malloc, free, and qsort use void pointers to accept or return pointers to any data type.
 - Data structures: Allows creation of generic data structures (e.g., linked lists, stacks) that can store any type of data.
 - Type-agnostic code: Enables writing code that works with different data types without knowing the type in advance.
+> The following topics are not strictly related to the C language but are very relevant in C programming.
+## Part Two - C Programming
+### Interprocess Communication
+You can have multiple processes executing the same program but each process has its own copy of the program within its own address space and executes it independently of the other copies. Processes are organized hierarchically. So, each process has a parent one which explicitly arranged to create it. A child inherits many of its attributes from the parent process.
+
 
 </samp> 
