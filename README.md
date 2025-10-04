@@ -45,7 +45,7 @@ Advanced C Programming Notes
     - [Dynamic memory allocation](#dynamic-memory-allocation)
     - [Function pointers](#function-pointers)
     - [Void pointers](#void-pointers)
-- [Part Two - C Programming](#part-two---c-programming)
+- [Part Two - Programming Concepts](#part-two---programming-concepts)
   - [Interprocess Communication](#interprocess-communication)
 
 ## Part One - The language
@@ -878,10 +878,59 @@ We will always have to cast the address in the void pointer to some other pointe
 - Generic functions: Functions like malloc, free, and qsort use void pointers to accept or return pointers to any data type.
 - Data structures: Allows creation of generic data structures (e.g., linked lists, stacks) that can store any type of data.
 - Type-agnostic code: Enables writing code that works with different data types without knowing the type in advance.
-> The following topics are not strictly related to the C language but are very relevant in C programming.
-## Part Two - C Programming
+## Part Two - Programming Concepts
+*The following topics are not strictly related to the C language but are very relevant in C programming.*
 ### Interprocess Communication
 You can have multiple processes executing the same program but each process has its own copy of the program within its own address space and executes it independently of the other copies. Processes are organized hierarchically. So, each process has a parent one which explicitly arranged to create it. A child inherits many of its attributes from the parent process.
+
+. Communication can be of two types:
+- Between related processes initiating from only one process, such as parent and child processes
+- Between unrelated processes, or two or more different processes
+
+. IPC methods:
+- Pipes (same process): First communicates with the second process, allows flow of data in one direction only (half duplex)
+- Named pipes: Different processes, FIFO, The first can communicate with the second and vice versa (full duplex)
+- Message queues: Process will communicate with each other by posting a message and retrieving it out of a queue (dull duplex)
+- Shared memory: Communication between two or more processes through a shared piece of memory among all of them
+- Sockets: Mostly used to communicate over a network
+- Signals: Communication between multiple processes by way of signaling. A source process can will send a signal and the destination process will handle it accordingly.
+
+#### Working with Signals
+. Signals are way to communicate information to a process about the state of other processes, the operating system and hardware, so that the process can take appropiate action. When a signal is sent, the operative system interrupts the target process' normal flow of execution to deliver the signal. A process can receive a signal asynchronously (at any time). A signal is just a short message which contains a single integer value.
+- After receiving the signal, the process will interrupt its current operations
+- Has to stop whatever it is doing and go deal with the signal
+- It will either handle or ignore the signal, or in some cases terminate (SIGTERM)
+
+. Just to view the all possible signals, type on a console or terminal (Unix):
+```sh
+kill -l
+```
+. To raise or handle a signal programmatically, the library `signal.h` provide the capability to raise signals with `raise(int)` and `signal()` or `sigaction()`. Signal function is used to tell the operting system which function it should call when a signal is sent to a process: `sighandler_t signal(int signum, sighandler_t handler);`. The system call `signal` would call the registered handler (second parameter) upon generation of signal.
+
+. This program register and handler for SIGINT signal to stop and exit from the while loop when the user send the signal by CTRL+C:
+```c
+#include <stdio.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+short b = 0;
+
+void local_handler(int sig) {
+    printf("Signal received:  %d", sig);
+    b = 1;
+}
+
+int main(void) {
+    void (*sigHandlerRet)(int);
+    sigHandlerRet = local_handler;
+    signal(SIGINT, sigHandlerRet);
+    // Continue until the SIGINT get cought
+    while(b == 0) { sleep(1); }
+    return 0;
+}
+```
+
 
 
 </samp> 
