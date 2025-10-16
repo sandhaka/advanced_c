@@ -905,7 +905,7 @@ You can have multiple processes executing the same program but each process has 
 ```sh
 kill -l
 ```
-. To raise or handle a signal programmatically, the library `signal.h` provide the capability to raise signals with `raise(int)` and `signal()` or `sigaction()`. Signal function is used to tell the operting system which function it should call when a signal is sent to a process: `sighandler_t signal(int signum, sighandler_t handler);`. The system call `signal` would call the registered handler (second parameter) upon generation of signal.
+. To raise or handle a signal programmatically, the library `signal.h` provide the capability to raise signals with `raise(int)` and `signal()` or `sigaction()`. Signal function is used to tell the operating system which function it should call when a signal is sent to a process: `sighandler_t signal(int signum, sighandler_t handler);`. The system call `signal` would call the registered handler (second parameter) upon generation of signal.
 
 . This program register and handler for SIGINT signal to stop and exit from the while loop when the user send the signal by CTRL+C:
 ```c
