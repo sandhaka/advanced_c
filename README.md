@@ -896,7 +896,7 @@ You can have multiple processes executing the same program but each process has 
 - Signals: Communication between multiple processes by way of signaling. A source process can will send a signal and the destination process will handle it accordingly.
 
 #### Working with Signals
-. Signals are way to communicate information to a process about the state of other processes, the operating system and hardware, so that the process can take appropiate action. When a signal is sent, the operative system interrupts the target process' normal flow of execution to deliver the signal. A process can receive a signal asynchronously (at any time). A signal is just a short message which contains a single integer value.
+Signals are way to communicate information to a process about the state of other processes, the operating system and hardware, so that the process can take appropiate action. When a signal is sent, the operative system interrupts the target process' normal flow of execution to deliver the signal. A process can receive a signal asynchronously (at any time). A signal is just a short message which contains a single integer value.
 - After receiving the signal, the process will interrupt its current operations
 - Has to stop whatever it is doing and go deal with the signal
 - It will either handle or ignore the signal, or in some cases terminate (SIGTERM)
@@ -930,7 +930,88 @@ int main(void) {
     return 0;
 }
 ```
+. `sigaction()` is a richer POSIX Api using struct sigaction, reliable and well-specified. Can also support flags and a mask to block specific signals while the handler runs.
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+#include <unistd.h>
 
+static void custom_handler(int sig, siginfo_t *si, void *ctx) {
+    (void)ctx;
+    printf("custom_handler: caught signal %d from pid=%d, uid=%d\n",
+           sig, si->si_pid, si->si_uid);
+    _exit(0);
+}
 
+int main(int argc, char **argv) {
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(sa));
 
+    if (argc < 2) {
+        fprintf(stderr, "usage: %s custom|ignore|default\n", argv[0]);
+        return 1;
+    }
+
+    if (strcmp(argv[1], "ignore") == 0) {
+        sa.sa_handler = SIG_IGN;             // ignore the signal
+    } else if (strcmp(argv[1], "default") == 0) {
+        sa.sa_handler = SIG_DFL;             // restore default action
+    } else { /* "custom" or anything else */
+        sa.sa_sigaction = custom_handler;    // custom handler with siginfo
+        sa.sa_flags = SA_SIGINFO | SA_RESTART;
+    }
+
+    if (sigaction(SIGINT, &sa, NULL) == -1) {
+        perror("sigaction");
+        return 1;
+    }
+
+    printf("Registered handler mode='%s'. Send SIGINT (Ctrl+C) to test.\n", argv[1]);
+    for (;;) pause(); // wait for signals
+    return 0;
+}
+```
+#### The `fork()` system call
+A new process is often needed to run other programs or to run a different "branch" of the existing program. The `fork` system call is a function where a process creates a copy of itself (the "parent" creates a "child" process). The child process has an exact copy of all the memory segments of the parent process, but a separate address space.
+
+. `fork()` is often used with `exec()` in order to start the execution of a different program. The return value of the fork call is the PID of the new process (sys/types.h).
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+int main(void) {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        perror("fork");
+        return 1;
+    }
+
+    if (pid == 0) { /* child */
+        printf("Child: pid=%d, ppid=%d\n", getpid(), getppid());
+        /* do child work */
+        sleep(1);
+        printf("Child: exiting with code 42\n");
+        _exit(42);
+    } else { /* parent */
+        int status;
+        printf("Parent: created child pid=%d\n", pid);
+        if (waitpid(pid, &status, 0) == -1) { // Wait to child (via pid) termination
+            perror("waitpid");
+            return 1;
+        }
+        if (WIFEXITED(status)) // Check the exit reason of the child process
+            printf("Parent: child exited with status=%d\n", WEXITSTATUS(status));
+        else if (WIFSIGNALED(status))
+            printf("Parent: child killed by signal %d\n", WTERMSIG(status));
+    }
+
+    return 0;
+}
+```
 </samp> 
