@@ -47,6 +47,7 @@ Advanced C Programming Notes
     - [Void pointers](#void-pointers)
 - [Part Two - Programming Concepts](#part-two---programming-concepts)
   - [Interprocess Communication](#interprocess-communication)
+  - [Threads](#threads)
 
 ## Part One - The language
 *The syntax, built-in functions and the compiler*
@@ -1014,4 +1015,6 @@ int main(void) {
     return 0;
 }
 ```
+### Threads
+...
 </samp> 
