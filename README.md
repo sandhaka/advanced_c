@@ -1016,5 +1016,20 @@ int main(void) {
 }
 ```
 ### Threads
-...
+Natural next step from multiple processes are threads. Threading was provided via hardware and OS support in the past. Implementations differed substantially from each other making it diffult for programmers to develop prtable threaded applications. In 1995, POSIX become the standard interface for many system calls in UNIX including the threading environment.
+
+The POSIX thread libraries are a standards based thread Api for C/C++ (posix-compliant OS). It is most effective on multi-processor or multi-core systems where the process flow can be scheduled to run on another processor. A thread is spawned. by defining a function and it's argument which will processed in the thread. The purpose of using POSIX thread library in your software is to execute software faster.
+
+#### Basic operations
+pthread functions are defined in a pthread.h header/include file and implemented in a thread library. `pthread_create` is used to create a new thread, `pthread_join` is useful to be able to identify when a thread has completed or exited, a join is performed when one wants to wait a thread to finish, used to link the current thread process to another thread.
+
+| Function | Description |
+|-----------|--------------|
+| `pthread_create` | Create a new thread. |
+| `pthread_join` | Wait for a thread to finish. |
+| `pthread_exit` | Terminate the calling thread. |
+| `pthread_self` | Get current thread ID. |
+| `pthread_equal` | Compare two thread IDs. |
+| `pthread_detach` | Detach a thread (no join needed). |
+
 </samp> 
