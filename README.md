@@ -1074,6 +1074,9 @@ int main(int argc, char** argv) {
     return 0;
 }
 ```
+`pthread_detach()` marks a thread as detached so that its resources are automatically released by the system when the thread terminates. Use it when you do not need to `pthread_join()` a thread and you want to avoid leaking the thread's resources. Detached threads cannot be joined. `pthread_join()` on a detached thread returns an error or if a thread returns a malloc'd pointer as its exit value, a detached thread must free that memory itself; nobody will receive the value. You can create a thread already detached by setting thread attributes, or detach it later.
 
+#### Stack Management
+The POSIX standard does not dictate the size of a thread's stack, so the actual size is implementation dependent and can varies. A common best practice is explicitly allocate enough stack for each thread by using the `pthread_attr_setstacksize` function.
 
 </samp> 
