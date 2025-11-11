@@ -47,7 +47,11 @@ Advanced C Programming Notes
     - [Void pointers](#void-pointers)
 - [Part Two - Programming Concepts](#part-two---programming-concepts)
   - [Interprocess Communication](#interprocess-communication)
+    - [Working with Signals](#working-with-signals)
+    - [The fork() system call](#the-fork-system-call)
   - [Threads](#threads)
+    - [Basic operations](#basic-operations)
+    - [Stack Management](#stack-management)
 
 ## Part One - The language
 *The syntax, built-in functions and the compiler*
@@ -1074,9 +1078,48 @@ int main(int argc, char** argv) {
     return 0;
 }
 ```
-`pthread_detach()` marks a thread as detached so that its resources are automatically released by the system when the thread terminates. Use it when you do not need to `pthread_join()` a thread and you want to avoid leaking the thread's resources. Detached threads cannot be joined. `pthread_join()` on a detached thread returns an error or if a thread returns a malloc'd pointer as its exit value, a detached thread must free that memory itself; nobody will receive the value. You can create a thread already detached by setting thread attributes, or detach it later.
+. `pthread_detach()` marks a thread as detached so that its resources are automatically released by the system when the thread terminates. Use it when you do not need to `pthread_join()` a thread and you want to avoid leaking the thread's resources. Detached threads cannot be joined. `pthread_join()` on a detached thread returns an error or if a thread returns a malloc'd pointer as its exit value, a detached thread must free that memory itself; nobody will receive the value. You can create a thread already detached by setting thread attributes, or detach it later.
+
+. `pthread_once()` is a one-time initializer helper for threads: it guarantees a given init function is executed exactly once (even if many threads call it concurrently). Use it for thread-safe, lazy, global/singleton initialization.
 
 #### Stack Management
-The POSIX standard does not dictate the size of a thread's stack, so the actual size is implementation dependent and can varies. A common best practice is explicitly allocate enough stack for each thread by using the `pthread_attr_setstacksize` function.
+The POSIX standard does not dictate the size of a thread's stack, so the actual size is implementation dependent and can varies. A common best practice is explicitly allocate enough stack for each thread by using the `pthread_attr_setstacksize` function. The operation is straightforward:
+```c
+#include <stdlib.h>
+#include <stdio.h>
+#include <pthread.h>
+
+pthread_attr_t attr;
+
+void *do_work(void *thread_id) {
+    long tid;
+    size_t stack_size;
+
+    tid = (long) thread_id;
+    pthread_attr_getstacksize(&attr, &stack_size);
+
+    printf("Thread %ld: stack size = %li bytes \n", tid, stack_size);
+
+    pthread_exit(NULL);
+}
+
+int main(int argc, char *argv[]) {
+    pthread_t thread_local;
+    long t = 0;
+
+    // Initialize the global variable before calling pthread_attr_* functions
+    pthread_attr_init(&attr);
+
+    pthread_create(&thread_local, &attr, &do_work, (void *)t);
+
+    pthread_join(thread_local, NULL);
+
+    printf("Main terminate after thread join\n");
+
+    return 0;
+}
+```
+
+#### Threads synchronization
 
 </samp> 
