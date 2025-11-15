@@ -52,6 +52,7 @@ Advanced C Programming Notes
   - [Threads](#threads)
     - [Basic operations](#basic-operations)
     - [Stack Management](#stack-management)
+    - [Threads synchronization](#threads-synchronization)
 
 ## Part One - The language
 *The syntax, built-in functions and the compiler*
@@ -1121,5 +1122,74 @@ int main(int argc, char *argv[]) {
 ```
 
 #### Threads synchronization
+Threads synchronization is about coordinating access to shared resources and ordering of actions between threads. The main goals are to avoid data races, enforce ordering, and allow threads to wait for events.
+
+Common primitives
+- Mutex (pthread_mutex_t): mutual exclusion for protecting shared data.
+- Condition variable (pthread_cond_t): wait/notify associated with a mutex (e.g., producer/consumer).
+- Semaphore (sem_t): count-based signalling between threads or processes.
+- Read–write lock (pthread_rwlock_t): allow concurrent readers / exclusive writer.
+- Barrier (pthread_barrier_t): make N threads wait until all reach a point.
+- Atomic operations (stdatomic.h / __atomic): low-overhead synchronization for simple counters/flags.
+- Spinlocks: busy-wait locks for very short critical sections (use with care).
+
+Guidelines
+- Keep critical sections short; avoid blocking while holding locks.
+- Prefer pthreads higher-level primitives (condvars, rwlocks) over ad-hoc signaling.
+- Use atomics for simple counters/flags to avoid mutex overhead.
+- Always establish a consistent lock order to prevent deadlocks.
+
+A mutex (mutual exclusion) is a synchronization primitive used to protect shared data from concurrent access by multiple threads. Only one thread may hold the mutex at a time; other threads block on pthread_mutex_lock() until the mutex becomes available.
+
+. Use a mutex to serialise access to shared resources (counters, data structures, files, etc.) Typical operations are:
+  - `pthread_mutex_init(&m, NULL)` — initialize (or use PTHREAD_MUTEX_INITIALIZER for static init).
+  - `pthread_mutex_lock(&m)` — lock (blocks if already locked).
+  - `pthread_mutex_trylock(&m)` — attempt to lock (non-blocking).
+  - `pthread_mutex_unlock(&m)` — unlock.
+  - `pthread_mutex_destroy(&m)` — destroy when no longer needed.
+
+Prefer keeping the locked region short to reduce contention. For special needs (recursive locking, priority inheritance) use mutex attributes (pthread_mutexattr_t).
+```c
+#include <pthread.h>
+
+static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t  cv   = PTHREAD_COND_INITIALIZER;
+static int ready = 0;
+
+void *consumer(void *arg) {
+    (void)arg;
+    pthread_mutex_lock(&lock);
+    while (!ready)                // use while to handle spurious wakeups
+        pthread_cond_wait(&cv, &lock);
+    // consume the resource...
+    pthread_mutex_unlock(&lock);
+    return NULL;
+}
+
+void *producer(void *arg) {
+    (void)arg;
+    // produce the resource...
+    pthread_mutex_lock(&lock);
+    ready = 1;
+    pthread_cond_signal(&cv);     // wake one waiting consumer
+    pthread_mutex_unlock(&lock);
+    return NULL;
+}
+```
+. `PTHREAD_MUTEX_INITIALIZER` is an utility macro provided by pthread.h to statically initialize a pthread_mutex_t with the implementation defaults. Equivalent to creating a default mutex and calling pthread_mutex_init(&m, NULL) (for the typical default attributes).
+
+. `pthread_mutexattr_t` is the attribute object used to configure properties of a pthread_mutex_t before initialization. You set options on the attr object and pass it to pthread_mutex_init() so the mutex is created with those properties.
+
+. A condition variable (`pthread_cond_t`) is a signalling primitive used together with a mutex to let threads wait for a condition (predicate) to become true. Threads block in `pthread_cond_wait()` (atomically releasing the mutex while waiting) and are awakened by `pthread_cond_signal()` (wake one) or `pthread_cond_broadcast()` (wake all).
+
+Key attributes and functions:
+- pthread_mutexattr_init / pthread_mutexattr_destroy — init/destroy the attribute object.
+- pthread_mutexattr_settype / pthread_mutexattr_gettype — set/get mutex type: PTHREAD_MUTEX_NORMAL (default), PTHREAD_MUTEX_ERRORCHECK, PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_DEFAULT.
+- pthread_mutexattr_setpshared / pthread_mutexattr_getpshared — control sharing:
+PTHREAD_PROCESS_PRIVATE (default) or PTHREAD_PROCESS_SHARED (use with shared memory).
+- pthread_mutexattr_setprotocol / pthread_mutexattr_getprotocol — set priority-protocol (e.g. PTHREAD_PRIO_NONE, PTHREAD_PRIO_INHERIT).
+- pthread_mutexattr_setprioceiling / getprioceiling — for priority-ceiling protocol.
+- pthread_mutexattr_setrobust / getrobust — set robustness (PTHREAD_MUTEX_STALLED vs PTHREAD_MUTEX_ROBUST) to recover from owner death.
+
 
 </samp> 
