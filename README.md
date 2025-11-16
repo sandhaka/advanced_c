@@ -53,6 +53,8 @@ Advanced C Programming Notes
     - [Basic operations](#basic-operations)
     - [Stack Management](#stack-management)
     - [Threads synchronization](#threads-synchronization)
+  - [Networking](#networking) 
+    - [Sockets](#sockets)
 
 ## Part One - The language
 *The syntax, built-in functions and the compiler*
@@ -1191,5 +1193,112 @@ PTHREAD_PROCESS_PRIVATE (default) or PTHREAD_PROCESS_SHARED (use with shared mem
 - pthread_mutexattr_setprioceiling / getprioceiling — for priority-ceiling protocol.
 - pthread_mutexattr_setrobust / getrobust — set robustness (PTHREAD_MUTEX_STALLED vs PTHREAD_MUTEX_ROBUST) to recover from owner death.
 
+### Networking
+#### Sockets
+This short chapter covers the most common socket operations for TCP/UDP networking on POSIX systems (Linux, macOS).
 
+Key functions and workflow (TCP server)
+- socket()    — create a socket descriptor.
+- bind()      — bind socket to an address/port.
+- listen()    — mark socket to accept incoming connections.
+- accept()    — accept a connection, returns new client socket.
+- recv()/send() or read()/write() — I/O on the connected socket.
+- close()     — close the socket.
+
+Key functions and workflow (TCP client)
+- socket()    — create a socket.
+- connect()   — connect to a server address/port.
+- send()/recv() — exchange data.
+- close()     — close socket.
+
+Common helpers / types
+- struct sockaddr_in, struct sockaddr — IPv4 addressing.
+- htons()/ntohs(), htonl()/ntohl() — byte order conversion.
+- inet_pton()/inet_ntop() — text ↔ binary IP address conversion.
+- getaddrinfo() / freeaddrinfo() — portable address resolution (IPv4/IPv6).
+- select()/poll()/epoll/kqueue — multiplex I/O for many sockets.
+
+Simple TCP server (IPv4, single client)
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+
+int main(void) {
+    int srv = socket(AF_INET, SOCK_STREAM, 0);
+    if (srv < 0) { perror("socket"); return 1; }
+
+    struct sockaddr_in addr = {
+        .sin_family = AF_INET,
+        .sin_port   = htons(8080),
+    };
+    inet_pton(AF_INET, "0.0.0.0", &addr.sin_addr);
+
+    if (bind(srv, (struct sockaddr*)&addr, sizeof(addr)) < 0) { perror("bind"); close(srv); return 1; }
+    if (listen(srv, 5) < 0) { perror("listen"); close(srv); return 1; }
+
+    printf("Listening on 0.0.0.0:8080\n");
+    int cli = accept(srv, NULL, NULL);
+    if (cli < 0) { perror("accept"); close(srv); return 1; }
+
+    char buf[128];
+    ssize_t n = recv(cli, buf, sizeof(buf)-1, 0);
+    if (n > 0) {
+        buf[n] = '\0';
+        printf("Got: %s\n", buf);
+        send(cli, "OK\n", 3, 0);
+    }
+
+    close(cli);
+    close(srv);
+    return 0;
+}
+```
+
+Simple TCP client
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
+int main(void) {
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    if (s < 0) { perror("socket"); return 1; }
+
+    struct sockaddr_in srv = {
+        .sin_family = AF_INET,
+        .sin_port   = htons(8080),
+    };
+    inet_pton(AF_INET, "127.0.0.1", &srv.sin_addr);
+
+    if (connect(s, (struct sockaddr*)&srv, sizeof(srv)) < 0) { perror("connect"); close(s); return 1; }
+    send(s, "hello server\n", 13, 0);
+
+    char buf[128];
+    ssize_t n = recv(s, buf, sizeof(buf)-1, 0);
+    if (n > 0) { buf[n] = '\0'; printf("Reply: %s", buf); }
+
+    close(s);
+    return 0;
+}
+```
+
+UDP example (send/recv)
+- Use socket(AF_INET, SOCK_DGRAM, 0).
+- Server uses recvfrom()/sendto(), client uses sendto()/recvfrom().
+- No connection state; client specifies destination address on each send.
+
+Notes
+- Use getaddrinfo() for portable IPv4/IPv6 code and to avoid manual inet_pton calls.
+- Check return values and handle EINTR for interrupted system calls.
+- For servers handling many clients, prefer non-blocking sockets + an I/O multiplexer (select/poll/epoll/kqueue) or spawn worker threads/processes.
+- On macOS and Linux compile with: gcc -std=c11 -Wall -O2 server.c -o server
+- Be mindful of security: validate inputs, avoid blocking while holding locks, and limit resource usage.
 </samp> 
