@@ -55,6 +55,8 @@ Advanced C Programming Notes
     - [Threads synchronization](#threads-synchronization)
   - [Networking](#networking) 
     - [Sockets](#sockets)
+- [Part Three - The Forgotten](#part-three---the-forgotten)
+    - [Operators precedence](#operators-precedence)
 
 ## Part One - The language
 *The syntax, built-in functions and the compiler*
@@ -1301,4 +1303,35 @@ Notes
 - For servers handling many clients, prefer non-blocking sockets + an I/O multiplexer (select/poll/epoll/kqueue) or spawn worker threads/processes.
 - On macOS and Linux compile with: gcc -std=c11 -Wall -O2 server.c -o server
 - Be mindful of security: validate inputs, avoid blocking while holding locks, and limit resource usage.
+
+## Part Three - The Forgotten
+*What I forgotten or miss completely*
+### Operators precedence
+Sometimes one may encounter something weired like:
+```c
+char first[7] = "ABCDEF\0";
+char second[7] = "defghi\0";
+
+char* p = first;
+char* s = second;
+
+*p++ = *s++;
+
+printf("%s\n", p);
+printf("%s\n", s);
+```
+Some operator precedence [tables](https://en.cppreference.com/w/c/language/operator_precedence.html) can help to understand what is going on... specially if one has used a high level langauge in the last decade...
+Why the output is as following?
+```sh
+BCDEF
+efghi
+```
+- Suffix/Postfix increment and decrement operators take the precedence here. 
+    - *Ehm, precedence determines how the expression is grouped, not when the side effect (the increment) takes place.*
+- So expression become `*(p++) = *(s++)`.
+- Then, according with the table, deferenced value *s 'd' is assigned to the location of p[0], the place of 'A'.
+- The pointers are incremented after deferencing and assignment (left-to-right order).
+- So, strings become 'dBCDEF' but due to increments printf will show 'BCDEF' and 'efghi'.
+
+
 </samp> 
